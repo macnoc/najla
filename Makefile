@@ -7,7 +7,7 @@ hosts:
 	sudo nano /etc/hosts
 
 dev:
-	$(DOCKER_COMPOSE_DEV) up --build -d && cd tailwind4 && npm run watch
+	$(DOCKER_COMPOSE_DEV) up --build -d && cd vite && npm run watch
 
 clean:
 	$(DOCKER_COMPOSE_DEV) down --rmi all --volumes --remove-orphans
