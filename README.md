@@ -15,8 +15,7 @@ A simple PHP starterkit for building web applications with a native PHP backend 
 
 - PHP 8.2 or higher
 - Composer
-- Node.js (if you need to install Vite)
-- npm (if you need to install Vite)
+- Node.js and npm (if you need to install Vite)
 
 ## Recommended development tools
 
