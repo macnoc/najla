@@ -1,0 +1,82 @@
+services:
+  # Apache
+  main-apache:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.dev
+    volumes:
+      - ../../public:/var/www/html
+      - ../../backend:/var/www/backend
+    ports:
+      - "80:80"
+    networks:
+      - main-network
+    depends_on:
+      main-mysql:
+        condition: service_healthy
+
+  # Main MySQL
+  main-mysql:
+    image: mysql:8.0
+    platform: linux/arm64/v8
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: main_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - ../db/mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "user", "-ppassword"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - main-network
+
+  # PHPMyAdmin
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: main-mysql
+      PMA_USER: root
+      PMA_PASSWORD: rootpassword
+      UPLOAD_LIMIT: 300M
+    depends_on:
+      - main-mysql
+    networks:
+      - main-network
+
+  # Mailpit
+  mailpit:
+    image: axllent/mailpit
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    environment:
+      - MAILPIT_SMTP_BIND=0.0.0.0:1025
+    networks:
+      - main-network
+    restart: always
+
+  # Dbmate
+  dbmate:
+    image: amacneil/dbmate
+    command: -d "./db/migrations" up
+    environment:
+      DATABASE_URL: "mysql://user:password@main-mysql/main_db"
+    volumes:
+      - ../db/migrations:/db/migrations
+    depends_on:
+      main-mysql:
+        condition: service_healthy
+    networks:
+      - main-network
+
+networks:
+  main-network:
+    name: main-network

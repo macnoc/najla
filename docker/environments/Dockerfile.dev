@@ -1,0 +1,28 @@
+FROM php:8.2-apache
+
+# Installera nödvändiga paket och PHP-tillägg
+RUN apt-get update && apt-get install -y \
+    gettext \
+    libzip-dev \
+    unzip \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
+    libpng-dev \
+    && rm -rf /var/lib/apt/lists/* \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install gettext pdo pdo_mysql zip gd
+
+# Aktivera Apache-moduler
+RUN a2enmod rewrite headers expires deflate
+
+# Uppdatera Apache-konfigurationen för att tillåta .htaccess
+RUN sed -i '/<Directory \/var\/www\/>/,/<\/Directory>/ s/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
+
+# Sätt arbetskatalogen
+WORKDIR /var/www/html
+
+# Sätt lämpliga rättigheter
+RUN chown -R www-data:www-data /var/www/html
+
+# Exponera port 80
+EXPOSE 80

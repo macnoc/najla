@@ -1,0 +1,13 @@
+{
+    "name": "your-project/name",
+    "require": {
+        "macnoc/najla-core": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "Najla\\Controllers\\": ["Controllers/"],
+            "Najla\\Models\\": ["Models/"],
+            "Najla\\Services\\": ["Services/"]
+        }
+    }
+}
