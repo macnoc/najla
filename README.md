@@ -26,7 +26,7 @@ A simple PHP starterkit for building web applications with a native PHP backend 
 ## Installation
 
 ```bash
-composer create-project macnoc/najla
+git clone https://github.com/macnoc/najla.git
 ```
 
 ### Install Vite
